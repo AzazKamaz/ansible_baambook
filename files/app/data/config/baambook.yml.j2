@@ -1,0 +1,15 @@
+http:
+  routers:
+    baambook:
+      entryPoints:
+        - https
+      service: baambook
+      rule: Host(`{{ config_domain }}`)
+      tls:
+        certResolver: letsEncrypt
+  services:
+    baambook:
+      loadBalancer:
+        servers:
+          - url: http://baambook:4000/
+        passHostHeader: true

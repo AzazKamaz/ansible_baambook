@@ -1,0 +1,29 @@
+version: "3"
+services:
+  redis:
+    image: redis:6.2.6
+    restart: always
+
+  baambook:
+    build: ./baambook/
+    restart: always
+    environment:
+      - PORT=4000
+      - HTTP_ORIGIN=//*.
+      - REDIS_URL=redis://redis:6379/
+    links:
+      - redis
+  
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    restart: always
+    command:
+      - --configFile=/opt/data/traefik.yml
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data:/opt/data:ro
+      - ./data/acme.json:/opt/acme.json:rw

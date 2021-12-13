@@ -1,0 +1,45 @@
+---
+- hosts: all
+  roles:
+    - workspace
+    - firewall
+  tasks:
+    - name: Clone baambook
+      git:
+        repo: https://github.com/AzazKamaz/baambook.git
+        dest: "{{ ansible_user_dir }}/app/baambook"
+
+    - name: Upload config
+      copy:
+        src: ./app/
+        dest: "{{ ansible_user_dir }}/app"
+        mode: preserve
+
+    - name: Template config
+      template:
+        src: "./files/app/{{ item }}.j2"
+        dest: "{{ ansible_user_dir }}/app/{{ item }}"
+      loop:
+        - data/traefik.yml
+        - data/config/baambook.yml
+    
+    - become: yes
+      block:
+        - name: Create cert store
+          copy:
+            dest: "{{ ansible_user_dir }}/app/data/acme.json"
+            content: ''
+            force: false
+        - name: Set cert store permissions
+          file:
+            path: "{{ ansible_user_dir }}/app/data/acme.json"
+            owner: root
+            group: root
+            mode: '0600'
+
+    - name: Start baambook
+      become: yes
+      community.docker.docker_compose:
+        project_src: "{{ ansible_user_dir }}/app"
+        build: yes
+        state: present

@@ -1,0 +1,26 @@
+# log:
+#   level: DEBUG
+
+entryPoints:
+  http:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https:
+    address: :443
+
+providers:
+  file:
+    directory: /opt/data/config/
+
+certificatesResolvers:
+  letsEncrypt:
+    acme:
+      email: "{{ config_acme_email }}"
+      storage: /opt/acme.json
+      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: http
