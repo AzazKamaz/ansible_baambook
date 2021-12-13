@@ -1,5 +1,7 @@
 # Ansible playbook to deploy baambook to some VPS
 
+Ansible playbook allows to easily deploy [baambook](https://github.com/AzazKamaz/baambook) (written in Elixir) under Docker using Traefik as TLS Reverse Proxy with auto Let's Encrypt certificate acquiring & updating
+
 Tested with Yandex.Cloud
 
 ## Guide
